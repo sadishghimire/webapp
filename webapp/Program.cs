@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
@@ -9,7 +10,7 @@ app.Run(async (HttpContext context) =>
 {
     if (context.Request.Method == "GET")
     {
-        if (context.Request.Path.StartsWithSegments("/")) 
+        if (context.Request.Path.StartsWithSegments("/"))
         {
             //Endpoint handling
             await context.Response.WriteAsync($"The method is:{context.Request.Method}\r\n");
@@ -26,12 +27,23 @@ app.Run(async (HttpContext context) =>
         {
             //Endpoint handling
             var employees = Employeesrepository.GetEmployees();
-            foreach (var employee in employees) 
+            foreach (var employee in employees)
             {
                 await context.Response.WriteAsync($"{employee.Name}:{employee.Address}\r\n");
             }
         }
-        
+
+    }
+    else if (context.Request.Method == "POST")
+    {
+        if (context.Request.Path.StartsWithSegments("/employees"))
+        {
+            await context.Response.WriteAsync($"This is a post method");
+            using var reader = new StreamReader(context.Request.Body);
+            var body = await reader.ReadToEndAsync();
+            var employee = JsonSerializer.Deserialize<Employee>(body);
+            Employeesrepository.AddEmployees(employee);
+        }
     }
 
     
@@ -48,6 +60,16 @@ static class Employeesrepository
         new Employee(3,"Shyam","butwal")
     };
     public static List<Employee> GetEmployees() => employees;
+   
+    public static void AddEmployees(Employee? employee)
+    {
+        if(employee is not null)
+        {
+            employees.Add(employee);
+        }
+
+        
+    }
 }
 
 
