@@ -45,8 +45,29 @@ app.Run(async (HttpContext context) =>
             Employeesrepository.AddEmployees(employee);
         }
     }
+    else if (context.Request.Method == "PUT")
+    {
+        if (context.Request.Path.StartsWithSegments("/employees"))
+        {
+            await context.Response.WriteAsync($"This is a put method");
+            using var reader = new StreamReader(context.Request.Body);
+            var body = await reader.ReadToEndAsync();
+            var employee = JsonSerializer.Deserialize<Employee>(body);
+            var result = Employeesrepository.updateEmployees(employee);
 
-    
+            if (result)
+            {
+                await context.Response.WriteAsync("Content updated successfully");
+            }
+            else
+            {
+                await context.Response.WriteAsync("Employee not found");
+            }
+
+        }
+    }
+
+
 });
 
 app.Run();
@@ -66,10 +87,23 @@ static class Employeesrepository
         if(employee is not null)
         {
             employees.Add(employee);
-        }
-
-        
+        } 
     }
+    public static bool updateEmployees(Employee? employee)
+    {
+        if (employee is not null)
+        {
+            var emp =employees.FirstOrDefault(x =>  x.Id == employee.Id);
+            if (emp is not null)
+            {
+                emp.Name = employee.Name;
+                emp.Address = employee.Address;
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
 
 
