@@ -8,64 +8,71 @@ app.MapGet("/", () => "Hello World!");
 
 app.Run(async (HttpContext context) =>
 {
-    if (context.Request.Method == "GET")
+    //if (context.Request.Method == "GET")
+    //{
+    //    if (context.Request.Path.StartsWithSegments("/"))
+    //    {
+    //        //Endpoint handling
+    //        await context.Response.WriteAsync($"The method is:{context.Request.Method}\r\n");
+    //        await context.Response.WriteAsync($"The url is:{context.Request.Path}\r\n");
+    //        await context.Response.WriteAsync($"The header is:{context.Request.Headers}\r\n");
+
+    //        foreach (var key in context.Request.Headers.Keys)
+    //        {
+    //            await context.Response.WriteAsync($"{key}:{context.Request.Headers[key]}\r\n");
+    //        }
+    //    }
+
+    //    else if (context.Request.Path.StartsWithSegments("/employees"))
+    //    {
+    //        //Endpoint handling
+    //        var employees = Employeesrepository.GetEmployees();
+    //        foreach (var employee in employees)
+    //        {
+    //            await context.Response.WriteAsync($"{employee.Name}:{employee.Address}\r\n");
+    //        }
+    //    }
+
+    //}
+    //else if (context.Request.Method == "POST")
+    //{
+    //    if (context.Request.Path.StartsWithSegments("/employees"))
+    //    {
+    //        await context.Response.WriteAsync($"This is a post method");
+    //        using var reader = new StreamReader(context.Request.Body);
+    //        var body = await reader.ReadToEndAsync();
+    //        var employee = JsonSerializer.Deserialize<Employee>(body);
+    //        Employeesrepository.AddEmployees(employee);
+    //    }
+    //}
+    //else if (context.Request.Method == "PUT")
+    //{
+    //    if (context.Request.Path.StartsWithSegments("/employees"))
+    //    {
+    //        await context.Response.WriteAsync($"This is a put method");
+    //        using var reader = new StreamReader(context.Request.Body);
+    //        var body = await reader.ReadToEndAsync();
+    //        var employee = JsonSerializer.Deserialize<Employee>(body);
+    //        var result = Employeesrepository.updateEmployees(employee);
+
+    //        if (result)
+    //        {
+    //            await context.Response.WriteAsync("Content updated successfully");
+    //        }
+    //        else
+    //        {
+    //            await context.Response.WriteAsync("Employee not found");
+    //        }
+
+    //    }
+    //}
+
+    //this is the code for querystring
+    foreach (var key in context.Request.Query.Keys)
     {
-        if (context.Request.Path.StartsWithSegments("/"))
-        {
-            //Endpoint handling
-            await context.Response.WriteAsync($"The method is:{context.Request.Method}\r\n");
-            await context.Response.WriteAsync($"The url is:{context.Request.Path}\r\n");
-            await context.Response.WriteAsync($"The header is:{context.Request.Headers}\r\n");
-
-            foreach (var key in context.Request.Headers.Keys)
-            {
-                await context.Response.WriteAsync($"{key}:{context.Request.Headers[key]}\r\n");
-            }
-        }
-
-        else if (context.Request.Path.StartsWithSegments("/employees"))
-        {
-            //Endpoint handling
-            var employees = Employeesrepository.GetEmployees();
-            foreach (var employee in employees)
-            {
-                await context.Response.WriteAsync($"{employee.Name}:{employee.Address}\r\n");
-            }
-        }
-
+        await context.Response.WriteAsync($"{key}:{context.Request.Query[key]}\r\n");
     }
-    else if (context.Request.Method == "POST")
-    {
-        if (context.Request.Path.StartsWithSegments("/employees"))
-        {
-            await context.Response.WriteAsync($"This is a post method");
-            using var reader = new StreamReader(context.Request.Body);
-            var body = await reader.ReadToEndAsync();
-            var employee = JsonSerializer.Deserialize<Employee>(body);
-            Employeesrepository.AddEmployees(employee);
-        }
-    }
-    else if (context.Request.Method == "PUT")
-    {
-        if (context.Request.Path.StartsWithSegments("/employees"))
-        {
-            await context.Response.WriteAsync($"This is a put method");
-            using var reader = new StreamReader(context.Request.Body);
-            var body = await reader.ReadToEndAsync();
-            var employee = JsonSerializer.Deserialize<Employee>(body);
-            var result = Employeesrepository.updateEmployees(employee);
-
-            if (result)
-            {
-                await context.Response.WriteAsync("Content updated successfully");
-            }
-            else
-            {
-                await context.Response.WriteAsync("Employee not found");
-            }
-
-        }
-    }
+    
 
 
 });
