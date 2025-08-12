@@ -9,22 +9,22 @@ app.MapGet("/", () => "Hello World!");
 
 app.Run(async (HttpContext context) =>
 {
-    if (context.Request.Method == "GET")
+    if (context.Request.Path.StartsWithSegments("/"))
     {
-        if (context.Request.Path.StartsWithSegments("/"))
+        //Endpoint handling
+        await context.Response.WriteAsync($"The method is:{context.Request.Method}\r\n");
+        await context.Response.WriteAsync($"The url is:{context.Request.Path}\r\n");
+        await context.Response.WriteAsync($"The header is:{context.Request.Headers}\r\n");
+
+        foreach (var key in context.Request.Headers.Keys)
         {
-            //Endpoint handling
-            await context.Response.WriteAsync($"The method is:{context.Request.Method}\r\n");
-            await context.Response.WriteAsync($"The url is:{context.Request.Path}\r\n");
-            await context.Response.WriteAsync($"The header is:{context.Request.Headers}\r\n");
-
-            foreach (var key in context.Request.Headers.Keys)
-            {
-                await context.Response.WriteAsync($"{key}:{context.Request.Headers[key]}\r\n");
-            }
+            await context.Response.WriteAsync($"{key}:{context.Request.Headers[key]}\r\n");
         }
+    }
 
-        else if (context.Request.Path.StartsWithSegments("/employees"))
+    else if (context.Request.Path.StartsWithSegments("/employees"))
+    {
+        if (context.Request.Method == "GET")
         {
             //Endpoint handling
             var employees = Employeesrepository.GetEmployees();
@@ -33,22 +33,16 @@ app.Run(async (HttpContext context) =>
                 await context.Response.WriteAsync($"{employee.Name}:{employee.Address}\r\n");
             }
         }
-
-    }
-    else if (context.Request.Method == "POST")
-    {
-        if (context.Request.Path.StartsWithSegments("/employees"))
+        else if (context.Request.Method == "POST")
         {
             await context.Response.WriteAsync($"This is a post method");
             using var reader = new StreamReader(context.Request.Body);
             var body = await reader.ReadToEndAsync();
             var employee = JsonSerializer.Deserialize<Employee>(body);
             Employeesrepository.AddEmployees(employee);
+
         }
-    }
-    else if (context.Request.Method == "PUT")
-    {
-        if (context.Request.Path.StartsWithSegments("/employees"))
+        else if (context.Request.Method == "PUT")
         {
             await context.Response.WriteAsync($"This is a put method");
             using var reader = new StreamReader(context.Request.Body);
@@ -64,19 +58,14 @@ app.Run(async (HttpContext context) =>
             {
                 await context.Response.WriteAsync("Employee not found");
             }
-
         }
-    }
-    else if (context.Request.Method == "DELETE")
-    {
-        if (context.Request.Path.StartsWithSegments("/employees"))
+        else if (context.Request.Method == "DELETE")
         {
-            var id=context.Request.Query["id"];
-            if(int.TryParse(id, out int employeeID))
+            var id = context.Request.Query["id"];
+            if (int.TryParse(id, out int employeeID))
             {
                 if (context.Request.Headers["Authorization"] == "hehe")
                 {
-
                     var result = Employeesrepository.DeleteEmployees(employeeID);
                     if (result)
                     {
@@ -91,18 +80,19 @@ app.Run(async (HttpContext context) =>
                 {
                     await context.Response.WriteAsync($"you are not authorized to delete\r\n");
                 }
-
             }
         }
     }
 
 
-        //this is the code for querystring
+
+
+    //this is the code for querystring
     //    foreach (var key in context.Request.Query.Keys)
     //{
     //    await context.Response.WriteAsync($"{key}:{context.Request.Query[key]}\r\n");
     //}
-    
+
 
 
 });
