@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using System.Runtime.Intrinsics.Arm;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,25 +74,34 @@ app.Run(async (HttpContext context) =>
             var id=context.Request.Query["id"];
             if(int.TryParse(id, out int employeeID))
             {
-                var result=Employeesrepository.DeleteEmployees(employeeID);
-                if (result) 
+                if (context.Request.Headers["Authorization"] == "hehe")
                 {
-                    await context.Response.WriteAsync($"Deleted successfully\r\n");
+
+                    var result = Employeesrepository.DeleteEmployees(employeeID);
+                    if (result)
+                    {
+                        await context.Response.WriteAsync($"Deleted successfully\r\n");
+                    }
+                    else/
+                    {
+                        await context.Response.WriteAsync($"Not  successfull\r\n");
+                    }
                 }
                 else
                 {
-                    await context.Response.WriteAsync($"Not  successfull\r\n");
+                    await context.Response.WriteAsync($"you are not authorized to delete\r\n");
                 }
+
             }
         }
     }
 
 
         //this is the code for querystring
-        foreach (var key in context.Request.Query.Keys)
-    {
-        await context.Response.WriteAsync($"{key}:{context.Request.Query[key]}\r\n");
-    }
+    //    foreach (var key in context.Request.Query.Keys)
+    //{
+    //    await context.Response.WriteAsync($"{key}:{context.Request.Query[key]}\r\n");
+    //}
     
 
 
