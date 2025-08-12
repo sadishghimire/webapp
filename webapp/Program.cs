@@ -82,7 +82,7 @@ app.Run(async (HttpContext context) =>
                     {
                         await context.Response.WriteAsync($"Deleted successfully\r\n");
                     }
-                    else/
+                    else
                     {
                         await context.Response.WriteAsync($"Not  successfull\r\n");
                     }
