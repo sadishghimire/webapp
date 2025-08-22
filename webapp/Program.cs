@@ -12,14 +12,17 @@ app.Run(async (HttpContext context) =>
     if (context.Request.Path.StartsWithSegments("/"))
     {
         //Endpoint handling
-        await context.Response.WriteAsync($"The method is:{context.Request.Method}\r\n");
-        await context.Response.WriteAsync($"The url is:{context.Request.Path}\r\n");
-        await context.Response.WriteAsync($"The header is:{context.Request.Headers}\r\n");
+        context.Response.Headers["Content-Type"] = "text/html";
+        await context.Response.WriteAsync($"The method is:{context.Request.Method}<br/>");
+        await context.Response.WriteAsync($"The url is:{context.Request.Path}<br/>");
+        await context.Response.WriteAsync($"<b>headers<b>:<br/>");
 
+        await context.Response.WriteAsync("<ul>");
         foreach (var key in context.Request.Headers.Keys)
         {
-            await context.Response.WriteAsync($"{key}:{context.Request.Headers[key]}\r\n");
+            await context.Response.WriteAsync($"<li><b>{key}<b>:{context.Request.Headers[key]}</li>");
         }
+        await context.Response.WriteAsync("</ul>");
     }
 
     else if (context.Request.Path.StartsWithSegments("/employees"))
@@ -143,20 +146,17 @@ static class Employeesrepository
 }
 
 
-public class Employee { 
-
+public class Employee 
+{ 
     public int Id { get; set; }
     public string Name { get; set; }
     public string Address { get; set; }
     
     public Employee(int id, string name, string address)
-
     {
         Id = id;
         Name=name; 
-        Address=address; 
-       
+        Address=address;   
     }
-
 }
 
